@@ -11,11 +11,16 @@ let initWebRoutes = (app) => {
 
     router.post('/api/create-new-game', gameController.CreateNewGame)
     router.post('/api/create-new-account', gameController.CreateNewAccount)
+    router.post('/api/create-new-software', gameController.CreateNewSoftware)
     router.post('/api/delete-account', gameController.DeleteAccount)
     router.post('/api/delete-game', gameController.DeleteGame)
+    router.post('/api/delete-software', gameController.DeleteSoftware)
     router.post('/api/change-password-account', gameController.ChangPasswordAccount)
     router.post('/api/change-infor-account', gameController.ChangeInforAccount)
     router.post('/api/change-infor-game', gameController.ChangeInforGame)
+    router.post('/api/change-infor-software', gameController.ChangeInforSoftware)
+
+    
 
     
     
@@ -32,6 +37,10 @@ let initWebRoutes = (app) => {
     router.get('/api/get-category-by-tagid', gameController.getCategoryByTagId)
     router.get('/api/get-all-account', gameController.getAllAccount)
     router.get('/api/get-all-game', gameController.getAllGame)
+    router.get('/api/get-suggest-game', gameController.getSuggestGame)
+    router.get('/api/get-comment-by-gameid', gameController.getCommentByGameId)
+    router.get('/api/get-all-software', gameController.getAllSoftware)
+    
 
     
     

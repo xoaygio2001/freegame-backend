@@ -199,8 +199,6 @@ let CreateNewGame = (data) => {
             }
 
             else {
-                
-                console.log('cc')
 
                 const jane = await db.Game.create({
                     name: data.name,
@@ -218,6 +216,7 @@ let CreateNewGame = (data) => {
                     playWith: data.playWith,
                     seri: data.seri,
                     point: data.point,
+                    type: "GAME",
                 });
 
                 let gameId = jane.toJSON().id
@@ -401,6 +400,7 @@ let getAllTopGame = (limit, type) => {
 
 
                 let fake = await db.Game.findAll({
+                    where: { type: 'GAME' },
                     include: [
                         {
                             model: db.TagGame,
@@ -497,6 +497,7 @@ let getAllTopGame18 = (limit) => {
 
 
                 const gamesWithC3Tag = await db.Game.findAll({
+                    where: { type: 'GAME' },
                     attributes: ['id'],
                     include: [
                         {
@@ -511,6 +512,7 @@ let getAllTopGame18 = (limit) => {
                 const gameIds = gamesWithC3Tag.map(game => game.id);
 
                 const fake = await db.Game.findAll({
+                    where: { type: 'GAME' },
                     include: [
                         {
                             model: db.TagGame,
@@ -626,6 +628,7 @@ let getGameByCategory = (tagId, limit, pageNumber) => {
 
 
                 const gamesWithC3Tag = await db.Game.findAll({
+                    where: { type: 'GAME' },
                     attributes: ['id'],
                     include: [
                         {
@@ -649,6 +652,7 @@ let getGameByCategory = (tagId, limit, pageNumber) => {
                 if (gameIds.length > 0) {
 
                     const fake = await db.Game.findAll({
+                        where: { type: 'GAME' },
                         include: [
                             {
                                 model: db.TagGame,
@@ -794,10 +798,12 @@ let getAllGame = (limit, pageNumber) => {
 
 
                 let getLength = await db.Game.findAll({
+                    where: { type: 'GAME' },
                     attributes: ['id']
                 })
 
                 let data = await db.Game.findAll({
+                    where: { type: 'GAME' },
                     attributes: ['id', 'name', 'seri', 'point', 'createdAt', 'updatedAt'],
                     order: [['id', 'DESC']],
                     limit: +limit,
@@ -1091,6 +1097,314 @@ let getAllTagGame = () => {
     })
 }
 
+let getSuggestGame = () => {
+    return new Promise(async (resolve, reject) => {
+        try {
+            let limit = 2;
+
+            let top10 = await db.Game.findAll({
+                order: [['point', 'DESC']],
+                limit: 3
+            })
+
+            let top10Ids = top10.map(item => item.id);
+
+            let data = await db.Game.findAll({
+                where: {
+                    id: top10Ids
+                },
+                order: [
+                    [Sequelize.literal('random()')]
+                ],
+                limit: +limit,
+                raw: true,
+                nest: true,
+            })
+
+            if (!data || data.length < 0) { data = [] }
+
+            else {
+                data.map((item) => {
+                    if (item.img) {
+                        item.img = new Buffer(item.img, 'base64').toString('binary');
+                        return item;
+                    }
+                })
+            }
+
+            resolve({
+                errMessage: 'ok',
+                errCode: 0,
+                data
+            })
+
+
+        } catch (e) {
+            reject(e);
+        }
+    })
+}
+
+
+let getCommentByGameId = (gameId, moreCommentNumber) => {
+    return new Promise(async (resolve, reject) => {
+        try {
+            if (!gameId || !moreCommentNumber) {
+                resolve({
+                    errCode: 1,
+                    errMessage: 'Missing parameter'
+                })
+            }
+            else {
+
+                let limit = 2;
+
+                const offset = (moreCommentNumber - 1) * limit;
+
+
+                let data = await db.Comment.findAll({
+                    where: {
+                        relyToCommentId: null,
+                        gameId: gameId
+                    },
+                    include: [
+                        {
+                            model: db.User,
+                            as: 'userData',
+                        },
+                        {
+                            model: db.Comment,
+                            as: 'commentChild',
+                            include: [{
+                                model: db.User,
+                                as: 'userData',
+                            }]
+
+                        }],
+
+                    limit: +limit,
+                    offset: offset,
+                });
+
+                let getLength = await db.Comment.findAll({
+                    where: { gameId: gameId },
+                    attributes: ['id'],
+                })
+
+
+
+
+                // if (!data) { data = {} }
+                // else {
+                //     data.img = new Buffer(data.img, 'base64').toString('binary');
+                // }
+
+                resolve({
+                    errMessage: 'ok',
+                    errCode: 0,
+                    data,
+                    allDataNumber: getLength.length,
+                })
+            }
+        } catch (e) {
+            reject(e);
+
+        }
+    })
+}
+
+
+let CreateNewSoftware = (data) => {
+    return new Promise(async (resolve, reject) => {
+        try {
+            if (
+                !data.name ||
+                !data.img ||
+                !data.url ||
+                !data.contentMarkdown ||
+                !data.contentHTML ||
+                !data.point
+            ) {
+
+                resolve({
+                    errCode: 1,
+                    errMessage: 'Missing parameter'
+                })
+            }
+
+            else {
+
+                const software = await db.Game.create({
+                    name: data.name,
+                    img: data.img,
+                    url: data.url,
+                    contentMarkdown: data.contentMarkdown,
+                    contentHTML: data.contentHTML,
+                    point: data.point,
+                    type: "SOFTWARE"
+                });
+
+                let softwareId = software.toJSON().id;
+
+                resolve({
+                    errCode: 0,
+                    message: 'Oke',
+                    softwareId: softwareId
+                })
+            }
+
+        }
+        catch (expcept) {
+            reject(expcept);
+        }
+    })
+}
+
+
+let getAllSoftware = (limit, pageNumber) => {
+    return new Promise(async (resolve, reject) => {
+        try {
+            if (!limit || !pageNumber) {
+                resolve({
+                    errCode: 1,
+                    errMessage: 'Missing parameter'
+                })
+            }
+            else {
+                const offset = (pageNumber - 1) * limit;
+
+
+                let getLength = await db.Game.findAll({
+                    where: { type: 'SOFTWARE' },
+                    attributes: ['id']
+                })
+
+                let data = await db.Game.findAll({
+                    where: { type: 'SOFTWARE' },
+                    attributes: ['id', 'name', 'img', 'point', 'createdAt', 'updatedAt'],
+                    order: [['id', 'DESC']],
+                    limit: +limit,
+                    offset: offset,
+                    raw: true,
+                    nest: true,
+                })
+
+
+                if (!data || data.length < 0) { data = [] }
+                else {
+                    data.map((item) => {
+                        if (item.img) {
+                            item.img = new Buffer(item.img, 'base64').toString('binary');
+                            return item;
+                        }
+                    })
+                }
+
+                resolve({
+                    errMessage: 'ok',
+                    errCode: 0,
+                    allDataNumber: getLength.length,
+                    data
+                })
+
+            }
+        } catch (e) {
+            reject(e);
+        }
+    })
+}
+
+
+let ChangeInforSoftware = (data) => {
+    return new Promise(async (resolve, reject) => {
+        try {
+            if (
+                !data.id ||
+                !data.name ||
+                !data.img ||
+                !data.url ||
+                !data.contentMarkdown ||
+                !data.contentHTML ||
+                !data.point
+            ) {
+                resolve({
+                    errCode: 1,
+                    errMessage: 'Missing parameter'
+                })
+            }
+            else {
+
+                await db.Game.update(
+                    {
+                        name: data.name,
+                        img: data.img,
+                        url: data.url,
+                        contentMarkdown: data.contentMarkdown,
+                        contentHTML: data.contentHTML,
+                        point: data.point,
+                    },
+                    {
+                        where: {
+                            id: data.id,
+                        }
+
+                    })
+
+
+                resolve({
+                    errMessage: 'ok',
+                    errCode: 0,
+                })
+
+            }
+        } catch (e) {
+            reject(e);
+        }
+    })
+}
+
+
+let DeleteSoftware = (data) => {
+    return new Promise(async (resolve, reject) => {
+        try {
+            if (
+                !data.id
+            ) {
+
+                resolve({
+                    errCode: 1,
+                    errMessage: 'Missing parameter'
+                })
+            }
+
+            else {
+
+                await db.Game.destroy({
+                    where: {
+                        id: data.id
+                    },
+                });
+
+                resolve({
+                    errCode: 0,
+                    message: 'Oke'
+                })
+
+
+
+            }
+
+        }
+        catch (expcept) {
+            reject(expcept);
+        }
+    })
+}
+
+
+
+
+
 
 
 
@@ -1113,5 +1427,12 @@ module.exports = {
     ChangeInforAccount: ChangeInforAccount,
     getAllGame: getAllGame,
     DeleteGame: DeleteGame,
-    ChangeInforGame: ChangeInforGame
+    ChangeInforGame: ChangeInforGame,
+    getSuggestGame: getSuggestGame,
+    getCommentByGameId: getCommentByGameId,
+    CreateNewSoftware: CreateNewSoftware,
+    getAllSoftware: getAllSoftware,
+    ChangeInforSoftware: ChangeInforSoftware,
+    DeleteSoftware: DeleteSoftware
+
 }

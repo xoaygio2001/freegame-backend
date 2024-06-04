@@ -287,12 +287,98 @@ let ChangeInforGame = async (req, res) => {
     }
 }
 
+let getSuggestGame = async (req, res) => {
+    try {
+        let infor = await gameService.getSuggestGame();
+        return res.status(200).json(
+            infor
+        )
+    } catch (e) {
+        console.log(e);
+        return res.status(200).json({
+            errCode: -1,
+            errMessage: 'Error from the server'
+        })
+    }
+}
+
+let getCommentByGameId = async (req, res) => {
+    try {
+        let infor = await gameService.getCommentByGameId(req.query.gameId,req.query.moreCommentNumber);
+        return res.status(200).json(
+            infor
+        )
+    } catch (e) {
+        console.log(e);
+        return res.status(200).json({
+            errCode: -1,
+            errMessage: 'Error from the server'
+        })
+    }
+}
 
 
 
+let CreateNewSoftware = async (req, res) => {
+    try {
+        let infor = await gameService.CreateNewSoftware(req.body);
+        return res.status(200).json(
+            infor
+        )
+    } catch (e) {
+        console.log(e);
+        return res.status(200).json({
+            errCode: -1,
+            errMessage: 'Error from the server'
+        })
+    }
+}
 
 
+let getAllSoftware = async (req, res) => {
+    try {
+        let infor = await gameService.getAllSoftware(req.query.limit,req.query.pageNumber);
+        return res.status(200).json(
+            infor
+        )
+    } catch (e) {
+        console.log(e);
+        return res.status(200).json({
+            errCode: -1,
+            errMessage: 'Error from the server'
+        })
+    }
+}
 
+let ChangeInforSoftware = async (req, res) => {
+    try {
+        let infor = await gameService.ChangeInforSoftware(req.body);
+        return res.status(200).json(
+            infor
+        )
+    } catch (e) {
+        console.log(e);
+        return res.status(200).json({
+            errCode: -1,
+            errMessage: 'Error from the server'
+        })
+    }
+}
+
+let DeleteSoftware = async (req, res) => {
+    try {
+        let infor = await gameService.DeleteSoftware(req.body);
+        return res.status(200).json(
+            infor
+        )
+    } catch (e) {
+        console.log(e);
+        return res.status(200).json({
+            errCode: -1,
+            errMessage: 'Error from the server'
+        })
+    }
+}
 
 
 
@@ -321,6 +407,13 @@ module.exports = {
     ChangeInforAccount: ChangeInforAccount,
     getAllGame: getAllGame,
     DeleteGame: DeleteGame,
-    ChangeInforGame: ChangeInforGame
+    ChangeInforGame: ChangeInforGame,
+    getSuggestGame: getSuggestGame,
+    getCommentByGameId: getCommentByGameId,
+    CreateNewSoftware: CreateNewSoftware,
+    getAllSoftware: getAllSoftware,
+    ChangeInforSoftware: ChangeInforSoftware,
+    DeleteSoftware: DeleteSoftware
+
 
 }

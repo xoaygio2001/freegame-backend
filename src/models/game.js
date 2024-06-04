@@ -34,7 +34,9 @@ module.exports = (sequelize, DataTypes) => {
     win: DataTypes.STRING,
     playWith: DataTypes.STRING,
     seri: DataTypes.STRING,
-    point: DataTypes.INTEGER
+    point: DataTypes.INTEGER,
+    copyright: DataTypes.STRING,
+    type: DataTypes.STRING,
   }, {
     sequelize,
     modelName: 'Game',
