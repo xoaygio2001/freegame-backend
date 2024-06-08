@@ -12,6 +12,7 @@ let initWebRoutes = (app) => {
     router.post('/api/create-new-game', gameController.CreateNewGame)
     router.post('/api/create-new-account', gameController.CreateNewAccount)
     router.post('/api/create-new-software', gameController.CreateNewSoftware)
+    router.post('/api/create-new-comment', gameController.CreateNewComment)
     router.post('/api/delete-account', gameController.DeleteAccount)
     router.post('/api/delete-game', gameController.DeleteGame)
     router.post('/api/delete-software', gameController.DeleteSoftware)

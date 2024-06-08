@@ -304,7 +304,7 @@ let getSuggestGame = async (req, res) => {
 
 let getCommentByGameId = async (req, res) => {
     try {
-        let infor = await gameService.getCommentByGameId(req.query.gameId,req.query.moreCommentNumber);
+        let infor = await gameService.getCommentByGameId(req.query.gameId,req.query.moreCommentNumber,req.query.type);
         return res.status(200).json(
             infor
         )
@@ -380,6 +380,23 @@ let DeleteSoftware = async (req, res) => {
     }
 }
 
+let CreateNewComment = async (req, res) => {
+    try {
+        let infor = await gameService.CreateNewComment(req.body);
+        return res.status(200).json(
+            infor
+        )
+    } catch (e) {
+        console.log(e);
+        return res.status(200).json({
+            errCode: -1,
+            errMessage: 'Error from the server'
+        })
+    }
+}
+
+
+
 
 
 
@@ -413,7 +430,8 @@ module.exports = {
     CreateNewSoftware: CreateNewSoftware,
     getAllSoftware: getAllSoftware,
     ChangeInforSoftware: ChangeInforSoftware,
-    DeleteSoftware: DeleteSoftware
+    DeleteSoftware: DeleteSoftware,
+    CreateNewComment: CreateNewComment
 
 
 }

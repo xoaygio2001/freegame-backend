@@ -245,6 +245,43 @@ let CreateNewGame = (data) => {
     })
 }
 
+let CreateNewComment = (data) => {
+    return new Promise(async (resolve, reject) => {
+        try {
+            if (
+                !data.gameId ||
+                !data.userId ||
+                !data.content
+            ) {
+
+                resolve({
+                    errCode: 1,
+                    errMessage: 'Missing parameter'
+                })
+            }
+
+            else {
+
+                const cmt = await db.Comment.create({
+                    gameId: data.gameId,
+                    userId: data.userId,
+                    content: data.content,
+                    relyToCommentId: (data.relyToCommentId ? data.relyToCommentId : null)
+                });
+
+                resolve({
+                    errCode: 0,
+                    message: 'Oke'
+                })
+            }
+
+        }
+        catch (expcept) {
+            reject(expcept);
+        }
+    })
+}
+
 let CreateNewAccount = (data) => {
     return new Promise(async (resolve, reject) => {
         try {
@@ -1146,10 +1183,10 @@ let getSuggestGame = () => {
 }
 
 
-let getCommentByGameId = (gameId, moreCommentNumber) => {
+let getCommentByGameId = (gameId, moreCommentNumber, type) => {
     return new Promise(async (resolve, reject) => {
         try {
-            if (!gameId || !moreCommentNumber) {
+            if (!gameId || !moreCommentNumber || !moreCommentNumber) {
                 resolve({
                     errCode: 1,
                     errMessage: 'Missing parameter'
@@ -1157,9 +1194,16 @@ let getCommentByGameId = (gameId, moreCommentNumber) => {
             }
             else {
 
-                let limit = 2;
+                let limit = 3;
 
                 const offset = (moreCommentNumber - 1) * limit;
+
+                let orderComent = [['createdAt', 'DESC']];
+
+
+                if(type == "OLD") {
+                    orderComent = [['createdAt', 'ASC']]
+                }
 
 
                 let data = await db.Comment.findAll({
@@ -1181,6 +1225,8 @@ let getCommentByGameId = (gameId, moreCommentNumber) => {
                             }]
 
                         }],
+
+                    order: orderComent,
 
                     limit: +limit,
                     offset: offset,
@@ -1433,6 +1479,7 @@ module.exports = {
     CreateNewSoftware: CreateNewSoftware,
     getAllSoftware: getAllSoftware,
     ChangeInforSoftware: ChangeInforSoftware,
-    DeleteSoftware: DeleteSoftware
+    DeleteSoftware: DeleteSoftware,
+    CreateNewComment: CreateNewComment
 
 }
