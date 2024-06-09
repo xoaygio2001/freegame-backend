@@ -506,7 +506,6 @@ let getAllTopGame = (limit, type) => {
                     })
                 }
 
-
                 resolve({
                     errMessage: 'ok',
                     errCode: 0,
@@ -1140,6 +1139,7 @@ let getSuggestGame = () => {
             let limit = 2;
 
             let top10 = await db.Game.findAll({
+                where: { type: 'GAME' },
                 order: [['point', 'DESC']],
                 limit: 3
             })
@@ -1148,6 +1148,7 @@ let getSuggestGame = () => {
 
             let data = await db.Game.findAll({
                 where: {
+                    type: 'GAME',
                     id: top10Ids
                 },
                 order: [
@@ -1201,7 +1202,7 @@ let getCommentByGameId = (gameId, moreCommentNumber, type) => {
                 let orderComent = [['createdAt', 'DESC']];
 
 
-                if(type == "OLD") {
+                if (type == "OLD") {
                     orderComent = [['createdAt', 'ASC']]
                 }
 
@@ -1446,12 +1447,6 @@ let DeleteSoftware = (data) => {
         }
     })
 }
-
-
-
-
-
-
 
 
 
